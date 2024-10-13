@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef } from 'react'
+import { useState, useRef, ChangeEvent } from 'react'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -10,7 +10,13 @@ import { X } from 'lucide-react'
 
 const categories = ['All', 'Wedding', 'Prewedding', 'Kids/Baby', 'Architecture', 'Commercial']
 
-const initialImages = [
+interface ImageItem {
+  id: number
+  src: string
+  category: string
+}
+
+const initialImages: ImageItem[] = [
   { id: 1, src: '/wedding/1.jpg', category: 'Wedding' },
   { id: 2, src: '/wedding/_05A4300.jpg', category: 'Wedding'},
   { id: 3, src: '/wedding/_05A4271.jpg', category: 'Wedding'},
@@ -23,36 +29,37 @@ const initialImages = [
   { id: 10, src:'/archicture/26ka_ku26-20241011-0005.webp', category: 'Architecture'},
   { id: 11, src:'/archicture/26ka_ku26-20241011-0002.webp', category: 'Architecture'},
   { id: 12, src:'/archicture/26ka_ku26-20241011-0004.webp', category: 'Architecture'},
-  
-
 ]
 
 export default function GalleryPage() {
   const [activeCategory, setActiveCategory] = useState('All')
-  const [images, setImages] = useState(initialImages)
-  const [selectedImage, setSelectedImage] = useState(null)
-  const fileInputRef = useRef(null)
+  const [images, setImages] = useState<ImageItem[]>(initialImages)
+  const [selectedImage, setSelectedImage] = useState<ImageItem | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const { toast } = useToast()
 
   const filteredImages = activeCategory === 'All'
     ? images
     : images.filter(image => image.category === activeCategory)
 
-  const handleFileUpload = (event) => {
-    const file = event.target.files[0]
+  const handleFileUpload = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
     if (file) {
       const reader = new FileReader()
       reader.onload = (e) => {
-        const newImage = {
-          id: images.length + 1,
-          src: e.target.result,
-          category: activeCategory === 'All' ? 'Other' : activeCategory
+        const result = e.target?.result
+        if (typeof result === 'string') {
+          const newImage: ImageItem = {
+            id: images.length + 1,
+            src: result,
+            category: activeCategory === 'All' ? 'Other' : activeCategory
+          }
+          setImages([...images, newImage])
+          toast({
+            title: "Image uploaded",
+            description: "Your image has been successfully added to the gallery.",
+          })
         }
-        setImages([...images, newImage])
-        toast({
-          title: "Image uploaded",
-          description: "Your image has been successfully added to the gallery.",
-        })
       }
       reader.readAsDataURL(file)
     }
@@ -82,7 +89,7 @@ export default function GalleryPage() {
           ref={fileInputRef}
           onChange={handleFileUpload}
         />
-        <Button onClick={() => fileInputRef.current.click()} className="text-lg px-6 py-3">
+        <Button onClick={() => fileInputRef.current?.click()} className="text-lg px-6 py-3">
           Upload New Image
         </Button>
       </div>

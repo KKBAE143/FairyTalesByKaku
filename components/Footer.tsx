@@ -7,7 +7,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
             <h3 className="text-lg font-semibold mb-4">FairyTalesByKaku</h3>
-            <p className="text-muted-foreground">Capturing life's precious moments with creativity and passion.</p>
+            <p className="text-muted-foreground">Capturing life&apos;s precious moments with creativity and passion.</p>
           </div>
           <div>
             <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
