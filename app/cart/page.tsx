@@ -3,13 +3,12 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
-import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/components/ui/use-toast'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ShoppingCart, Tag, X } from 'lucide-react'
+import { ShoppingCart } from 'lucide-react'
 import confetti from 'canvas-confetti'
 
 const services = [
@@ -42,7 +41,6 @@ export default function CartPage() {
     if (storedCart) {
       try {
         const parsedCart = JSON.parse(storedCart)
-        // Ensure all cart items have the necessary properties
         const validCart = parsedCart.filter(item => 
           item && typeof item === 'object' && 'id' in item && 'name' in item && 'price' in item && 'offerPrice' in item
         )
@@ -102,7 +100,6 @@ export default function CartPage() {
       return
     }
 
-    // Simulate sending email
     console.log('Sending email to Kakufotography@gmail.com')
     console.log('Order details:', { cart, name, email, phone, total: getTotalPrice() })
 
@@ -111,7 +108,6 @@ export default function CartPage() {
       description: "Thank you for your order. We'll contact you soon!",
     })
 
-    // Clear cart and show celebration
     localStorage.removeItem('cart')
     setCart([])
     setShowCelebration(true)
@@ -121,7 +117,6 @@ export default function CartPage() {
       origin: { y: 0.6 }
     })
 
-    // Redirect to home page after 3 seconds
     setTimeout(() => {
       router.push('/')
     }, 3000)
@@ -209,4 +204,50 @@ export default function CartPage() {
                 placeholder="Your Phone"
                 type="tel"
                 value={phone}
-                
+                onChange={(e) => setPhone(e.target.value)}
+              />
+              <div className="flex space-x-2">
+                <Input
+                  placeholder="Coupon Code"
+                  value={couponCode}
+                  onChange={(e) => setCouponCode(e.target.value)}
+                />
+                <Button onClick={applyCoupon}>Apply</Button>
+              </div>
+              {appliedDiscount > 0 && (
+                <p className="text-sm text-green-600">Discount applied: {appliedDiscount * 100}% off</p>
+              )}
+              <p className="text-lg font-semibold">Total: ₹{getTotalPrice().toLocaleString('en-IN')}</p>
+            </CardContent>
+            <CardFooter>
+              <Button onClick={handleCheckout} className="w-full">Place Order</Button>
+            </CardFooter>
+          </Card>
+        </div>
+      </div>
+      <AnimatePresence>
+        {showCelebration && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+          >
+            <div className="bg-white p-8 rounded-lg text-center">
+              <h2 className="text-3xl font-bold mb-4">Thank You!</h2>
+              <p className="text-xl mb-4">Your order has been placed successfully.</p>
+              <Image
+                src="/placeholder.svg?height=200&width=200"
+                alt="Celebration"
+                width={200}
+                height={200}
+                className="mx-auto mb-4"
+              />
+              <p>Redirecting to home page...</p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
