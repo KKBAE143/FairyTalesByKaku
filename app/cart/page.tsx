@@ -11,7 +11,31 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { ShoppingCart } from 'lucide-react'
 import confetti from 'canvas-confetti'
 
-const services = [
+type CartItem = {
+  id: number;
+  name: string;
+  price: number;
+  offerPrice: number;
+};
+
+type Service = {
+  id: number;
+  name: string;
+  price: number;
+  offerPrice: number;
+};
+
+type Coupons = {
+  [key: string]: number;
+};
+
+const coupons: Coupons = {
+  'SUMMER10': 0.1,
+  'FLASH20': 0.2,
+  'SPECIAL30': 0.3,
+};
+
+const services: Service[] = [
   { id: 1, name: 'Wedding Photography', price: 50000, offerPrice: 45000 },
   { id: 2, name: 'Portrait Session', price: 10000, offerPrice: 8500 },
   { id: 3, name: 'Event Coverage', price: 25000, offerPrice: 22000 },
@@ -19,14 +43,9 @@ const services = [
   { id: 5, name: 'Aerial Photography', price: 20000, offerPrice: 18000 },
 ]
 
-const coupons = {
-  'SUMMER10': 0.1,
-  'FLASH20': 0.2,
-  'SPECIAL30': 0.3,
-}
 
 export default function CartPage() {
-  const [cart, setCart] = useState([])
+  const [cart, setCart] = useState<CartItem[]>([])
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
@@ -41,7 +60,7 @@ export default function CartPage() {
     if (storedCart) {
       try {
         const parsedCart = JSON.parse(storedCart)
-        const validCart = parsedCart.filter(item => 
+        const validCart = parsedCart.filter((item: unknown) =>
           item && typeof item === 'object' && 'id' in item && 'name' in item && 'price' in item && 'offerPrice' in item
         )
         setCart(validCart)
@@ -52,7 +71,7 @@ export default function CartPage() {
     }
   }, [])
 
-  const addToCart = (service) => {
+  const addToCart = (service: Service) => {
     const newCart = [...cart, { ...service }]
     setCart(newCart)
     localStorage.setItem('cart', JSON.stringify(newCart))
@@ -62,7 +81,7 @@ export default function CartPage() {
     })
   }
 
-  const removeFromCart = (index) => {
+  const removeFromCart = (index: number) => {
     const newCart = [...cart]
     newCart.splice(index, 1)
     setCart(newCart)
@@ -75,7 +94,7 @@ export default function CartPage() {
   }
 
   const applyCoupon = () => {
-    if (coupons[couponCode]) {
+    if (couponCode in coupons) {
       setAppliedDiscount(coupons[couponCode])
       toast({
         title: "Coupon applied",
