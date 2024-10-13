@@ -8,7 +8,16 @@ import { useToast } from '@/components/ui/use-toast'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Camera, Users, Baby, Building2, ShoppingBag } from 'lucide-react'
 
-const services = [
+interface Service {
+  id: number
+  name: string
+  price: number
+  offerPrice: number
+  image: string
+  icon: React.ElementType
+}
+
+const services: Service[] = [
   { id: 1, name: 'Wedding Photography', price: 50000, offerPrice: 45000, image: '/wedding/_05A4300.jpg', icon: Users },
   { id: 2, name: 'Prewedding Photography', price: 10000, offerPrice: 8500, image: '/engagement/2.jpg', icon: Camera },
   { id: 3, name: 'Kids/Baby Photography', price: 15000, offerPrice: 13000, image: '/baby/_05A0574.jpg', icon: Baby },
@@ -17,8 +26,8 @@ const services = [
 ]
 
 export default function ServicesPage() {
-  const [cart, setCart] = useState([])
-  const [selectedService, setSelectedService] = useState(null)
+  const [cart, setCart] = useState<Service[]>([])
+  const [selectedService, setSelectedService] = useState<Service | null>(null)
   const { toast } = useToast()
 
   useEffect(() => {
@@ -34,7 +43,7 @@ export default function ServicesPage() {
     }
   }, [])
 
-  const addToCart = (service) => {
+  const addToCart = (service: Service) => {
     const newCart = [...cart, service]
     setCart(newCart)
     localStorage.setItem('cart', JSON.stringify(newCart))
@@ -76,7 +85,7 @@ export default function ServicesPage() {
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <CardTitle className="flex items-center">
-                      <service.icon className="w-6 h-6 mr-2" />
+                      {<service.icon className="w-6 h-6 mr-2" />}
                       {service.name}
                     </CardTitle>
                   </div>
@@ -103,14 +112,18 @@ export default function ServicesPage() {
                   </p>
                 </CardContent>
                 <CardFooter>
-                  <Button 
-                    onClick={() => addToCart(service)} 
-                    className="w-full"
+                  <motion.div
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
+                    className="w-full"
                   >
-                    Add to Cart
-                  </Button>
+                    <Button 
+                      onClick={() => addToCart(service)} 
+                      className="w-full"
+                    >
+                      Add to Cart
+                    </Button>
+                  </motion.div>
                 </CardFooter>
               </Card>
             </motion.div>

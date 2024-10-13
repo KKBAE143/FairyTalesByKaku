@@ -1,13 +1,24 @@
-"use client"
+'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, ReactNode } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { motion, useMotionValue, useSpring, useAnimationFrame } from 'framer-motion'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 
-const categories = [
+interface Category {
+  name: string
+  image: string
+  gallery: string[]
+}
+
+interface Testimonial {
+  text: string
+  author: string
+}
+
+const categories: Category[] = [
   { 
     name: 'Wedding', 
     image: '/wedding/_05A9694.jpg',
@@ -46,7 +57,7 @@ const categories = [
   },
 ]
 
-const testimonials = [
+const testimonials: Testimonial[] = [
   {
     text: "FairyTalesByKuku captured our wedding beautifully. The photos are stunning and full of emotion. Highly recommended!",
     author: "Samantha"
@@ -64,16 +75,16 @@ const testimonials = [
     author: "Sanjana"
   },
   {
-    text: "The event coverage was exceptional. They didn't miss a single important moment throughout the night.",
-    author: "Kumar "
+    text: "The event coverage was exceptional. They didn&apos;t miss a single important moment throughout the night.",
+    author: "Kumar"
   },
   {
-    text: "I'm in awe of how they captured the essence of our newborn. These photos will be treasured forever.",
+    text: "I&apos;m in awe of how they captured the essence of our newborn. These photos will be treasured forever.",
     author: "New Parents"
   }
 ]
 
-const backgroundImages = [
+const backgroundImages: string[] = [
   '/wedding/_05A4300.jpg',
   '/engagement/2.jpg',
   '/engagement/1.jpg',
@@ -81,10 +92,16 @@ const backgroundImages = [
   '/baby/_05A8814.jpg'
 ]
 
-const InfiniteScroll = ({ children, speed = 50, direction = 'left' }) => {
+interface InfiniteScrollProps {
+  children: ReactNode
+  speed?: number
+  direction?: 'left' | 'right' | 'up' | 'down'
+}
+
+const InfiniteScroll: React.FC<InfiniteScrollProps> = ({ children, speed = 50, direction = 'left' }) => {
   const [looperInstances, setLooperInstances] = useState(1)
-  const outerRef = useRef(null)
-  const innerRef = useRef(null)
+  const outerRef = useRef<HTMLDivElement>(null)
+  const innerRef = useRef<HTMLDivElement>(null)
 
   const setupInstances = () => {
     if (!innerRef?.current || !outerRef?.current) return
@@ -109,8 +126,8 @@ const InfiniteScroll = ({ children, speed = 50, direction = 'left' }) => {
   useAnimationFrame((t, delta) => {
     if (!innerRef?.current) return
     const xTranslation = Number(innerRef.current.getAttribute('data-translation') || 0) + delta / speed
-    innerRef.current.style.transform = `translate${direction === 'left' ? 'X' : 'Y'}(${direction === 'left' ? '-' : ''}${xTranslation}px)`
-    innerRef.current.setAttribute('data-translation', xTranslation)
+    innerRef.current.style.transform = `translate${direction === 'left' || direction === 'right' ? 'X' : 'Y'}(${direction === 'left' || direction === 'up' ? '-' : ''}${xTranslation}px)`
+    innerRef.current.setAttribute('data-translation', xTranslation.toString())
   })
 
   return (
@@ -127,7 +144,7 @@ const InfiniteScroll = ({ children, speed = 50, direction = 'left' }) => {
 }
 
 export default function Home() {
-  const [selectedCategory, setSelectedCategory] = useState(null)
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null)
   const [currentBgIndex, setCurrentBgIndex] = useState(0)
   const cursorX = useMotionValue(-100)
   const cursorY = useMotionValue(-100)
@@ -135,7 +152,7 @@ export default function Home() {
   const cursorXSpring = useSpring(cursorX, springConfig)
   const cursorYSpring = useSpring(cursorY, springConfig)
 
-  const handleCategoryClick = (category) => {
+  const handleCategoryClick = (category: Category) => {
     setSelectedCategory(category === selectedCategory ? null : category)
   }
 
@@ -147,7 +164,7 @@ export default function Home() {
     return () => clearInterval(changeBackground)
   }, [])
 
-  const handleMouseMove = (event) => {
+  const handleMouseMove = (event: React.MouseEvent) => {
     cursorX.set(event.clientX - 16)
     cursorY.set(event.clientY - 16)
   }
@@ -164,7 +181,7 @@ export default function Home() {
 
       <section className="text-center mb-16">
         <h1 className="text-5xl font-bold mb-6">Welcome to FairyTalesByKuku</h1>
-        <p className="text-xl text-muted-foreground mb-12">Capturing life's precious moments with creativity and passion</p>
+        <p className="text-xl text-muted-foreground mb-12">Capturing life&apos;s precious moments with creativity and passion</p>
         <div className="relative h-[70vh] mb-12 overflow-hidden">
           {backgroundImages.map((image, index) => (
             <motion.div
@@ -252,7 +269,7 @@ export default function Home() {
 
       <section className="text-center mb-24">
         <h2 className="text-4xl font-semibold mb-6">Ready to capture your moments?</h2>
-        <p className="text-xl text-muted-foreground mb-12">Let's create beautiful memories together</p>
+        <p className="text-xl text-muted-foreground mb-12">Let&apos;s create beautiful memories together</p>
         <Link href="/contact">
           <Button size="lg" variant="outline" className="text-lg px-8 py-6">Get in Touch</Button>
         </Link>
@@ -268,7 +285,7 @@ export default function Home() {
               whileHover={{ scale: 1.05, boxShadow: "0px 5px 15px rgba(0,0,0,0.1)" }}
               transition={{ duration: 0.3 }}
             >
-              <p className="text-lg mb-4">"{testimonial.text}"</p>
+              <p className="text-lg mb-4">&apos;{testimonial.text}&apos;</p>
               <p className="font-semibold">- {testimonial.author}</p>
             </motion.div>
           ))}
